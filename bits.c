@@ -1,6 +1,6 @@
-/* 
- * CS:APP Data Lab 
- * 
+/*
+ * CS:APP Data Lab
+ *
  * bits.c - Source file with your solutions to the Lab.
  *          This is the file you will hand in to your instructor.
  *
@@ -8,7 +8,7 @@
  * compiler. You can still use printf for debugging without including
  * <stdio.h>, although you might get a compiler warning. In general,
  * it's not good practice to ignore compiler warnings, but in this
- * case it's OK.  
+ * case it's OK.
  */
 
 #include "btest.h"
@@ -25,11 +25,11 @@ team_struct team =
       Your login ID if working as a one person team
       or, ID1+ID2 where ID1 is the login ID of the first team member
       and ID2 is the login ID of the second team member */
-    "", 
+    "jode4557",
    /* Student name 1: Replace with the full name of first team member */
-   "",
+   "Jordan Deitsch",
    /* Login ID 1: Replace with the login ID of first team member */
-   "",
+   "jode4557",
 
    /* The following should only be changed if there are two team members */
    /* Student name 2: Full name of the second team member */
@@ -47,11 +47,11 @@ You will provide your solution to the Data Lab by
 editing the collection of functions in this source file.
 
 CODING RULES:
- 
+
   Replace the "return" statement in each function with one
-  or more lines of C code that implements the function. Your code 
+  or more lines of C code that implements the function. Your code
   must conform to the following style:
- 
+
   int Funct(arg1, arg2, ...) {
       /* brief description of how your implementation works */
       int var1 = Expr1;
@@ -70,7 +70,7 @@ CODING RULES:
   2. Function arguments and local variables (no global variables).
   3. Unary integer operations ! ~
   4. Binary integer operations & ^ | + << >>
-    
+
   Some of the problems restrict the set of allowed operators even further.
   Each "Expr" may consist of multiple operators. You are not restricted to
   one operator per line.
@@ -82,7 +82,7 @@ CODING RULES:
   4. Call any functions.
   5. Use any other operations, such as &&, ||, -, or ?:
   6. Use any form of casting.
- 
+
   You may assume that your machine:
   1. Uses 2s complement, 32-bit representations of integers.
   2. Performs right shifts arithmetically.
@@ -110,26 +110,26 @@ EXAMPLES OF ACCEPTABLE CODING STYLE:
 
 
 NOTES:
-  1. Use the dlc (data lab checker) compiler (described in the handout) to 
+  1. Use the dlc (data lab checker) compiler (described in the handout) to
      check the legality of your solutions.
   2. Each function has a maximum number of operators (! ~ & ^ | + << >>)
-     that you are allowed to use for your implementation of the function. 
-     The max operator count is checked by dlc. Note that '=' is not 
+     that you are allowed to use for your implementation of the function.
+     The max operator count is checked by dlc. Note that '=' is not
      counted; you may use as many of these as you want without penalty.
   3. Use the btest test harness to check your functions for correctness.
   4. The maximum number of ops for each function is given in the
-     header comment for each function. If there are any inconsistencies 
+     header comment for each function. If there are any inconsistencies
      between the maximum ops in the writeup and in this file, consider
      this file the authoritative source.
 #endif
 
 /*
  * STEP 3: Modify the following functions according the coding rules.
- * 
+ *
  *   IMPORTANT. TO AVOID GRADING SURPRISES:
  *   1. Use the dlc compiler to check that your solutions conform
  *      to the coding rules.
- *   2. Use the btest test harness to check that your solutions produce 
+ *   2. Use the btest test harness to check that your solutions produce
  *      the correct answers. Watch out for corner cases around Tmin and Tmax.
  */
 /* Copyright (C) 1991-2014 Free Software Foundation, Inc.
@@ -171,8 +171,8 @@ NOTES:
 // 4 - rating 3
 // 4 - rating 4
 // rating 1
-/* 
- * bitNor - ~(x|y) using only ~ and & 
+/*
+ * bitNor - ~(x|y) using only ~ and &
  *   Example: bitNor(0x6, 0x5) = 0xFFFFFFF8
  *   Legal ops: ~ &
  *   Max ops: 8
@@ -181,8 +181,8 @@ NOTES:
 int bitNor(int x, int y) {
   return 2;
 }
-/* 
- * TMax - return maximum two's complement integer 
+/*
+ * TMax - return maximum two's complement integer
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 4
  *   Rating: 1
@@ -191,8 +191,8 @@ int tmax(void) {
   return 2;
 }
 // rating 2
-/* 
- * fitsBits - return 1 if x can be represented as an 
+/*
+ * fitsBits - return 1 if x can be represented as an
  *  n-bit, two's complement integer.
  *   1 <= n <= 32
  *   Examples: fitsBits(5,3) = 0, fitsBits(-4,3) = 1
@@ -203,7 +203,7 @@ int tmax(void) {
 int fitsBits(int x, int n) {
   return 2;
 }
-/* 
+/*
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
  *  Round toward zero
  *   Examples: divpwr2(15,1) = 7, divpwr2(-33,4) = -2
@@ -214,8 +214,8 @@ int fitsBits(int x, int n) {
 int divpwr2(int x, int n) {
     return 2;
 }
-/* 
- * isNotEqual - return 0 if x == y, and 1 otherwise 
+/*
+ * isNotEqual - return 0 if x == y, and 1 otherwise
  *   Examples: isNotEqual(5,5) = 0, isNotEqual(4,5) = 1
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 6
@@ -224,8 +224,8 @@ int divpwr2(int x, int n) {
 int isNotEqual(int x, int y) {
   return 2;
 }
-/* 
- * bitXor - x^y using only ~ and & 
+/*
+ * bitXor - x^y using only ~ and &
  *   Example: bitXor(4, 5) = 1
  *   Legal ops: ~ &
  *   Max ops: 14
@@ -234,7 +234,7 @@ int isNotEqual(int x, int y) {
 int bitXor(int x, int y) {
   return 2;
 }
-/* 
+/*
  * copyLSB - set all bits of result to least significant bit of x
  *   Example: copyLSB(5) = 0xFFFFFFFF, copyLSB(6) = 0x00000000
  *   Legal ops: ! ~ & ^ | + << >>
@@ -245,7 +245,7 @@ int copyLSB(int x) {
   return 2;
 }
 // rating 3
-/* 
+/*
  * reverseBytes - reverse the bytes of x
  *   Example: reverseBytes(0x01020304) = 0x04030201
  *   Legal ops: ! ~ & ^ | + << >>
@@ -255,19 +255,19 @@ int copyLSB(int x) {
 int reverseBytes(int x) {
   return 2;
 }
-/* 
+/*
  * logicalShift - shift x to the right by n, using a logical shift
  *   Can assume that 1 <= n <= 31
  *   Examples: logicalShift(0x87654321,4) = 0x08765432
  *   Legal ops: ~ & ^ | + << >>
  *   Max ops: 16
- *   Rating: 3 
+ *   Rating: 3
  */
 int logicalShift(int x, int n) {
   return 2;
 }
-/* 
- * isGreater - if x > y  then return 1, else return 0 
+/*
+ * isGreater - if x > y  then return 1, else return 0
  *   Example: isGreater(4,5) = 0, isGreater(5,4) = 1
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 24
@@ -276,8 +276,8 @@ int logicalShift(int x, int n) {
 int isGreater(int x, int y) {
   return 2;
 }
-/* 
- * bitMask - Generate a mask consisting of all 1's 
+/*
+ * bitMask - Generate a mask consisting of all 1's
  *   lowbit and highbit
  *   Examples: bitMask(5,3) = 0x38
  *   Assume 0 <= lowbit <= 31, and 0 <= highbit <= 31
@@ -290,7 +290,7 @@ int bitMask(int highbit, int lowbit) {
   return 2;
 }
 // rating 4
-/* 
+/*
  * abs - absolute value of x (except returns TMin for TMin)
  *   Example: abs(-1) = 1.
  *   Legal ops: ! ~ & ^ | + << >>
@@ -310,23 +310,23 @@ int abs(int x) {
 int bitCount(int x) {
   return 2;
 }
-/* 
+/*
  * isNonZero - Check whether x is nonzero using
  *              the legal operators except !
  *   Examples: isNonZero(3) = 1, isNonZero(0) = 0
  *   Legal ops: ~ & ^ | + << >>
  *   Max ops: 10
- *   Rating: 4 
+ *   Rating: 4
  */
 int isNonZero(int x) {
   return 2;
 }
-/* 
+/*
  * bang - Compute !x without using !
  *   Examples: bang(3) = 0, bang(0) = 1
  *   Legal ops: ~ & ^ | + << >>
  *   Max ops: 12
- *   Rating: 4 
+ *   Rating: 4
  */
 int bang(int x) {
   return 2;
