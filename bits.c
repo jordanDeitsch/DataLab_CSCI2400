@@ -179,7 +179,7 @@ NOTES:
  *   Rating: 1
  */
 int bitNor(int x, int y) {
-  return 2;
+  return (~x & ~y);
 }
 /*
  * TMax - return maximum two's complement integer
