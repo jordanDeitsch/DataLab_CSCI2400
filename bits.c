@@ -212,8 +212,7 @@ int tmax(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  x = x ^ 1<<n;
-  return 1;
+  return 2;
 }
 /*
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -224,6 +223,9 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
+  int temp = x>>n;
+  int last = x & 1<<31;
+  printf("%d \n", last);
   return (x>>n);
 }
 /*
@@ -250,9 +252,7 @@ int isNotEqual(int x, int y) {
  *   Rating: 2
  */
 int bitXor(int x, int y) {
-  int temp1 = x & ~y;
-  int temp2 = ~x & y;
-  return (temp1 & temp2);
+  return 2;
 }
 /*
  * copyLSB - set all bits of result to least significant bit of x
@@ -262,18 +262,14 @@ int bitXor(int x, int y) {
  *   Rating: 2
  */
 int copyLSB(int x) {
-  /* First must check state of least significant byte with x & 1
-   * Then use result | result<<1 to set next byte equal to lsb
-   * Continue pattern, doubling over next set of bytes to match lsb
+  /* First must find state of least significant bit with x & 1
+   * Then set temporary result to all 1's with ~0
+   * Add current state of LSB, will wrap to all zeros iif LSB = 1
+   * Switch all bits with ~() for final result
    */
-  int result = x & 1;
-  result = result | result<<1;
-  result = result | result<<2;
-  result = result | result<<4;
-  result = result | result<<8;
-  result = result | result<<16;
-  result = result | result<<31;
-  return result;
+  int result = ~0;
+  int LSB = x & 1;
+  return ~(result + LSB);
 }
 // rating 3
 /*
