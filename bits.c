@@ -179,6 +179,12 @@ NOTES:
  *   Rating: 1
  */
 int bitNor(int x, int y) {
+  /* To perform ~(x|y), the following results are desired:
+   *  0 from (x,y) = (1,1), (1,0), (0,1)
+   *  1 from (x,y) = (0,0)
+   *  This is achieved by (x&y) if x and y are inverted,
+   *  therefore use (~x & ~y)
+  */
   return (~x & ~y);
 }
 /*
@@ -188,7 +194,12 @@ int bitNor(int x, int y) {
  *   Rating: 1
  */
 int tmax(void) {
-  return 2;
+  /*
+   *  Maximum number at all 1's except for left-most bit (011...111) for positivity
+   *  Therefore invert 0 to get all 1's, then XOR (^) with a 1 shifted to the end
+  */
+  int temp = ~0;
+  return (temp ^ 1<<31);
 }
 // rating 2
 /*
@@ -201,7 +212,8 @@ int tmax(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  return 2;
+  x = x ^ 1<<n;
+  return 1;
 }
 /*
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -212,7 +224,7 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    return 2;
+  return (x>>n);
 }
 /*
  * isNotEqual - return 0 if x == y, and 1 otherwise
@@ -222,7 +234,13 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int isNotEqual(int x, int y) {
-  return 2;
+  /* must first check if each bit in x is equal to its corresponding bit in y
+   *  if all are equal, the result is 0...000, which is desired
+   *  if not all equal, result is something random, force it to zero with !()
+   *  use !() once more to convert back to 0 for true, 1 for false
+   */
+  int temp = !(x ^ y);
+  return (!temp);
 }
 /*
  * bitXor - x^y using only ~ and &
@@ -232,7 +250,9 @@ int isNotEqual(int x, int y) {
  *   Rating: 2
  */
 int bitXor(int x, int y) {
-  return 2;
+  int temp1 = x & ~y;
+  int temp2 = ~x & y;
+  return (temp1 & temp2);
 }
 /*
  * copyLSB - set all bits of result to least significant bit of x
@@ -242,7 +262,18 @@ int bitXor(int x, int y) {
  *   Rating: 2
  */
 int copyLSB(int x) {
-  return 2;
+  /* First must check state of least significant byte with x & 1
+   * Then use result | result<<1 to set next byte equal to lsb
+   * Continue pattern, doubling over next set of bytes to match lsb
+   */
+  int result = x & 1;
+  result = result | result<<1;
+  result = result | result<<2;
+  result = result | result<<4;
+  result = result | result<<8;
+  result = result | result<<16;
+  result = result | result<<31;
+  return result;
 }
 // rating 3
 /*
