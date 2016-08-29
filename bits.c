@@ -223,9 +223,6 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-  int temp = x>>n;
-  int last = x & 1<<31;
-  printf("%d \n", last);
   return (x>>n);
 }
 /*
@@ -252,7 +249,14 @@ int isNotEqual(int x, int y) {
  *   Rating: 2
  */
 int bitXor(int x, int y) {
-  return 2;
+  /* First create truth table for (~x & y), (x & ~y)
+   * Write table now for and of inverses: ~(~x & y) & ~(x & ~y)
+   * Finally, write table for the inverse of the above
+   * This yeilds the desired table for the x^y with only ~ and &
+   */
+  int temp1 = ~(~x & y);
+  int temp2 = ~(x & ~y);
+  return ~(temp1 & temp2);
 }
 /*
  * copyLSB - set all bits of result to least significant bit of x
