@@ -275,7 +275,7 @@ int copyLSB(int x) {
   int LSB = x & 1;
   return ~(result + LSB);
 }
-// rating 3
+// rating
 /*
  * reverseBytes - reverse the bytes of x
  *   Example: reverseBytes(0x01020304) = 0x04030201
@@ -318,7 +318,17 @@ int isGreater(int x, int y) {
  *   Rating: 3
  */
 int bitMask(int highbit, int lowbit) {
-  return 2;
+  /* Begin with -1 (all 1's)
+   * Shift all ones over by lowest bit first: 11111000
+   * Then shift all ones over by highest bit: 11100000
+   * Must shift by one more bit (cannot do it immediately if highbit = 32)
+   * Invert bits for the high bit shift: 00111111
+   * Simply & the two numbers, all overlapping 1's will create mask
+   */
+  int temp1 = (~0) << lowbit;
+  int temp2 = (~0) << (highbit);
+  temp2 = ~(temp2<<1);  
+  return (temp1 & temp2);
 }
 // rating 4
 /*
