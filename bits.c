@@ -295,7 +295,11 @@ int reverseBytes(int x) {
  *   Rating: 3
  */
 int logicalShift(int x, int n) {
-  return 2;
+  int temp = x>>1;
+  int nMin1 = n + (~0);
+  temp = ~(1<<31) & temp;
+
+  return (temp >> nMin1);
 }
 /*
  * isGreater - if x > y  then return 1, else return 0
