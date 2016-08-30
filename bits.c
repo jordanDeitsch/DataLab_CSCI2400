@@ -179,11 +179,12 @@ NOTES:
  *   Rating: 1
  */
 int bitNor(int x, int y) {
-  /* To perform ~(x|y), the following results are desired:
-   *  0 from (x,y) = (1,1), (1,0), (0,1)
-   *  1 from (x,y) = (0,0)
-   *  This is achieved by (x&y) if x and y are inverted,
-   *  therefore use (~x & ~y)
+  /*
+   * To perform ~(x|y), the following results are desired:
+   * 0 from (x,y) = (1,1), (1,0), (0,1)
+   * 1 from (x,y) = (0,0)
+   * This is achieved by (x&y) if x and y are inverted,
+   * therefore use (~x & ~y)
   */
   return (~x & ~y);
 }
@@ -195,8 +196,8 @@ int bitNor(int x, int y) {
  */
 int tmax(void) {
   /*
-   *  Maximum number at all 1's except for left-most bit (011...111) for positivity
-   *  Therefore invert 0 to get all 1's, then XOR (^) with a 1 shifted to the end
+   * Maximum number at all 1's except for left-most bit (011...111) for positivity
+   * Therefore invert 0 to get all 1's, then XOR (^) with a 1 shifted to the end
   */
   int temp = ~0;
   return (temp ^ 1<<31);
@@ -223,7 +224,12 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-  return (x>>n);
+  int sign = !((1<<31) & x);  // 1 for positive, 0 for negative
+  int even = !(1 & x);        // 1 for even, 0 for odd
+  int negAndEven = !((!sign) & even) + (~0);  // -1 for negAndEven, 0 for else
+  //int negAndZero = 0;
+  int temp = x>>n;
+  return temp + !sign + negAndEven;
 }
 /*
  * isNotEqual - return 0 if x == y, and 1 otherwise
@@ -233,10 +239,11 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int isNotEqual(int x, int y) {
-  /* must first check if each bit in x is equal to its corresponding bit in y
-   *  if all are equal, the result is 0...000, which is desired
-   *  if not all equal, result is something random, force it to zero with !()
-   *  use !() once more to convert back to 0 for true, 1 for false
+  /*
+   * must first check if each bit in x is equal to its corresponding bit in y
+   * if all are equal, the result is 0...000, which is desired
+   * if not all equal, result is something random, force it to zero with !()
+   * use !() once more to convert back to 0 for true, 1 for false
    */
   int temp = !(x ^ y);
   return (!temp);
@@ -249,7 +256,8 @@ int isNotEqual(int x, int y) {
  *   Rating: 2
  */
 int bitXor(int x, int y) {
-  /* First create truth table for (~x & y), (x & ~y)
+  /*
+   * First create truth table for (~x & y), (x & ~y)
    * Write table now for and of inverses: ~(~x & y) & ~(x & ~y)
    * Finally, write table for the inverse of the above
    * This yeilds the desired table for the x^y with only ~ and &
@@ -266,7 +274,8 @@ int bitXor(int x, int y) {
  *   Rating: 2
  */
 int copyLSB(int x) {
-  /* First must find state of least significant bit with x & 1
+  /*
+   * First must find state of least significant bit with x & 1
    * Then set temporary result to all 1's with ~0
    * Add current state of LSB, will wrap to all zeros iif LSB = 1
    * Switch all bits with ~() for final result
@@ -295,6 +304,12 @@ int reverseBytes(int x) {
  *   Rating: 3
  */
 int logicalShift(int x, int n) {
+  /*
+   * Begin by shifting one right, will be used to only pad with zeros
+   * Calculate remaining number of shifts as n-1 = n + (~0)
+   * Set MSB of number to zero, so all remaining padding is zeros
+   * Shift remining number of bits (n-1)
+   */
   int temp = x>>1;
   int nMin1 = n + (~0);
   temp = ~(1<<31) & temp;
@@ -309,7 +324,11 @@ int logicalShift(int x, int n) {
  *   Rating: 3
  */
 int isGreater(int x, int y) {
-  return 2;
+  int negY = ~y + 1;
+  int sum = x + negY + (~0);
+  int sign = !((1<<31) & sum); // 1 if positive, 0 if negative
+  //printf("x: %d, neg: %d , sign: %d \n", y, negY, sign);
+  return sign;
 }
 /*
  * bitMask - Generate a mask consisting of all 1's
@@ -322,7 +341,8 @@ int isGreater(int x, int y) {
  *   Rating: 3
  */
 int bitMask(int highbit, int lowbit) {
-  /* Begin with -1 (all 1's)
+  /*
+   * Begin with -1 (all 1's)
    * Shift all ones over by lowest bit first: 11111000
    * Then shift all ones over by highest bit: 11100000
    * Must shift by one more bit (cannot do it immediately if highbit = 32)
@@ -364,7 +384,17 @@ int bitCount(int x) {
  *   Rating: 4
  */
 int isNonZero(int x) {
-  return 2;
+  /*
+   * Begin by flipping sign on x, zero remains zero, with (~x)+1
+   * Ensure that MSB is 1 only if x was originally zero
+   * Shift MSB to ensure that all bits are 0 or 1
+   * Now if non-zero, temp = -1, if zero, temp = 0
+   * Flip previous statement so if non-zero, temp = 0
+   * Return temp + 1
+   */
+  int temp = (~x) + 1;
+  temp = temp | x;
+  return (~(temp>>31) + 1);
 }
 /*
  * bang - Compute !x without using !
@@ -374,5 +404,17 @@ int isNonZero(int x) {
  *   Rating: 4
  */
 int bang(int x) {
+  /* Could use previous function methods (modified), but this way is fun!
+   * For each shift any ones are copied into the next chunk
+   * By the temp<<16, any ones are copied to the MSB
+   * Use temp>>31 to set all bits to 1 (only if a 1 originally existed)
+   * Add one to result, as now answer is either -1 or 0
+   */
+  int temp = x | (x<<1);
+  temp = temp | (temp<<2);
+  temp = temp | (temp<<4);
+  temp = temp | (temp<<8);
+  temp = temp | (temp<<16);
+  return ((temp>>31) + 1);
   return 2;
 }
