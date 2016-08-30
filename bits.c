@@ -275,7 +275,7 @@ int copyLSB(int x) {
   int LSB = x & 1;
   return ~(result + LSB);
 }
-// rating
+// rating 3
 /*
  * reverseBytes - reverse the bytes of x
  *   Example: reverseBytes(0x01020304) = 0x04030201
@@ -327,7 +327,7 @@ int bitMask(int highbit, int lowbit) {
    */
   int temp1 = (~0) << lowbit;
   int temp2 = (~0) << (highbit);
-  temp2 = ~(temp2<<1);  
+  temp2 = ~(temp2<<1);
   return (temp1 & temp2);
 }
 // rating 4
