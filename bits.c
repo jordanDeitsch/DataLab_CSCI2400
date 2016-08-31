@@ -212,18 +212,15 @@ int tmax(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  int nMin1 = n + (~0);       // n minus 1
-  int min = (~0) << nMin1; // same procedure as tmax, but for n bit number
-  int max = ~min;
-
-  //int test = x ^ ((~x) + 1);
-  //printf("test: %d \n", test);
   int negX = (~x) + 1;
-  int diffMin = ((min + negX)>>31) + 1; // 0 if min < x (desired)
-  int diffMax = ((max + negX)>>31) + 1; // 1 if max > x (desired)
+  int signX = x>>31;  // 11...111 if negative, 00...000 if non-negative
+  int absX = (x & (signX)) + (negX & (~signX));
 
-  // if both desired, then return 1
-  return ((!diffMin) & (diffMax));
+  int nMin1 = n + (~0);
+  int test = absX + (1<<nMin1) + (~0);
+  return !(test>>31);
+
+  return !(absX >> nMin1);  // 0 if doesn't fit, 1 if it does
 }
 /*
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -307,7 +304,22 @@ int copyLSB(int x) {
  *   Rating: 3
  */
 int reverseBytes(int x) {
-  return 2;
+  /* Begin by creating a mas for the firt byte, 00..0011111111
+   * Separate original bytes with the mask and proper shifts
+   * Set bytes to new locations with proper shifts
+   * Use inclusive or (|) to combine all bytes into result*/
+  int mask = ~((~0)<<8);
+  int a = x & mask;
+  int b = x & (mask << 8);
+  int c = x & (mask << 16);
+  int d = x & (mask << 24);
+
+  int newA = a << 24;
+  int newB = b << 8;
+  int newC = c >> 8;
+  int newD = (d >> 24) & mask; // incase negative
+
+  return (newA | newB | newC | newD);
 }
 /*
  * logicalShift - shift x to the right by n, using a logical shift
