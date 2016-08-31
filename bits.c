@@ -350,14 +350,26 @@ int logicalShift(int x, int n) {
  *   Rating: 3
  */
 int isGreater(int x, int y) {
-  int negX = (~x) + 1;
-  int negY = (~y) + 1;
-  int diff1 = (x) + (negY);
-  int diff2 = (x>>1) + (negY>>1);
+  /* Begin by finding the difference between x and y
+   * If difference > 0, then x > y, as x - y >0
+   * If equal, set difference to -1 (to avoid confusion)
+   * Check for possible cases of wrapping
+   * Occurs when x>0, y<0, diff<0 (diff should be > 0)
+   * Also when x<0, y>0, diff>0 (diff should be < 0)
+   * Use these exceptions to correct difference if either are true
+   */
+  int diff = x + ((~y) + 1);  // add x + (-y)
+  int temp = (~(!diff)) + 1;  // if diff = 0, temp = -1, else temp = 0
+  diff = diff + temp;         // if diff = 0, set to -1, else diff unchanged
 
-  int sign1 = !((1<<31) & diff1);
-  int sign2 = !((1<<31) & diff2);
-  return (sign2);
+  int signX = !(x>>31);
+  int signY = !(y>>31);
+  int signDiff = !(diff>>31);
+
+  int wrap1 = (signX) & (!signY) & (!signDiff);  // 1 = wrapped to neg
+  int wrap2 = (!signX) & (signY) & (signDiff);   // 1 = wrapped to pos
+  int result = signDiff + wrap1 + ((~wrap2) + 1);
+  return result;
 }
 /*
  * bitMask - Generate a mask consisting of all 1's
