@@ -234,23 +234,16 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-
-  int test = !n + (~0);  // 0 if n = 0,
-  int nMin1 = n + ((~0) & (~(!n + (~0))));
+  /* Must first determine the sign of the number
+   * Negative numbers must be rounded up, not down (x>>n always floors)
+   * Determine if any of the divisions will require rounding
+   * This is any of the shifts from 1 - n that have a non-zero remainder
+   * If this remainder exists, add it on to negative results after the division
+   */
   int sign = !((x>>31) + 1);  // 0 if positive, 1 if negative
-
-  int rem = (x>>nMin1) & 1;   // 0 if no rounding, 1 if needs rounding
+  int temp = ~((~0)<<n);      // 00 ... 011  (zeros with n 1's)
+  int rem = !(!(temp & x));   // 0 if no rounding, 1 if needs rounding
   return ((x>>n) + (sign & rem));
-
-  int negX = (~x) + 1;
-  int signX = x>>31;  // 00...000 if positive, 11...111 if negative
-
-  int pos = x & (!signX);
-  int neg = negX & signX;
-
-  int posDiv = (x & signX)>>n;
-  int negDiv = (negX & (~signX))>>n;
-  return posDiv + (~negDiv + 1);
 }
 /*
  * isNotEqual - return 0 if x == y, and 1 otherwise
