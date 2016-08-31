@@ -197,10 +197,9 @@ int bitNor(int x, int y) {
 int tmax(void) {
   /*
    * Maximum number at all 1's except for left-most bit (011...111) for positivity
-   * Therefore invert 0 to get all 1's, then XOR (^) with a 1 shifted to the end
+   * Therefore invert 0 to get all 1's, then right shift 31 and invert again
   */
-  int temp = ~0;
-  return (temp ^ 1<<31);
+  return ~((~0)<<31);
 }
 // rating 2
 /*
@@ -213,7 +212,18 @@ int tmax(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  return 2;
+  int nMin1 = n + (~0);       // n minus 1
+  int min = (~0) << nMin1; // same procedure as tmax, but for n bit number
+  int max = ~min;
+
+  //int test = x ^ ((~x) + 1);
+  //printf("test: %d \n", test);
+  int negX = (~x) + 1;
+  int diffMin = ((min + negX)>>31) + 1; // 0 if min < x (desired)
+  int diffMax = ((max + negX)>>31) + 1; // 1 if max > x (desired)
+
+  // if both desired, then return 1
+  return ((!diffMin) & (diffMax));
 }
 /*
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -224,12 +234,23 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-  int sign = !((1<<31) & x);  // 1 for positive, 0 for negative
-  int even = !(1 & x);        // 1 for even, 0 for odd
-  int negAndEven = !((!sign) & even) + (~0);  // -1 for negAndEven, 0 for else
-  //int negAndZero = 0;
-  int temp = x>>n;
-  return temp + !sign + negAndEven;
+
+  int test = !n + (~0);  // 0 if n = 0,
+  int nMin1 = n + ((~0) & (~(!n + (~0))));
+  int sign = !((x>>31) + 1);  // 0 if positive, 1 if negative
+
+  int rem = (x>>nMin1) & 1;   // 0 if no rounding, 1 if needs rounding
+  return ((x>>n) + (sign & rem));
+
+  int negX = (~x) + 1;
+  int signX = x>>31;  // 00...000 if positive, 11...111 if negative
+
+  int pos = x & (!signX);
+  int neg = negX & signX;
+
+  int posDiv = (x & signX)>>n;
+  int negDiv = (negX & (~signX))>>n;
+  return posDiv + (~negDiv + 1);
 }
 /*
  * isNotEqual - return 0 if x == y, and 1 otherwise
@@ -324,11 +345,14 @@ int logicalShift(int x, int n) {
  *   Rating: 3
  */
 int isGreater(int x, int y) {
-  int negY = ~y + 1;
-  int sum = x + negY + (~0);
-  int sign = !((1<<31) & sum); // 1 if positive, 0 if negative
-  //printf("x: %d, neg: %d , sign: %d \n", y, negY, sign);
-  return sign;
+  int negX = (~x) + 1;
+  int negY = (~y) + 1;
+  int diff1 = (x) + (negY);
+  int diff2 = (x>>1) + (negY>>1);
+
+  int sign1 = !((1<<31) & diff1);
+  int sign2 = !((1<<31) & diff2);
+  return (sign2);
 }
 /*
  * bitMask - Generate a mask consisting of all 1's
@@ -363,7 +387,17 @@ int bitMask(int highbit, int lowbit) {
  *   Rating: 4
  */
 int abs(int x) {
-  return 2;
+  /*
+   * Begin by finding the negative value of the current x
+   * Note: do not know which, x or negX, is actually negative
+   * Determine sign of each x, negX
+   * Set signs such that if positive, all 0's, negative, all 1's
+   * Finally & the value with sign (x & signX), add these & statements
+   * This will effectively zero out the negative and add the positive
+   */
+  int negX = (~x) + 1;
+  int signX = x>>31;  // 11...111 if negative, 00...000 if non-negative
+  return (x & (~signX)) + (negX & signX);
 }
 /*
  * bitCount - returns count of number of 1's in word
@@ -373,7 +407,12 @@ int abs(int x) {
  *   Rating: 4
  */
 int bitCount(int x) {
-  return 2;
+  int temp = 0;
+  int i;
+  for (i = 0; i < 32; i++){
+    temp += ((x>>i) & 1);
+  }
+  return temp;
 }
 /*
  * isNonZero - Check whether x is nonzero using
