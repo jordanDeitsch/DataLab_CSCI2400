@@ -199,7 +199,7 @@ int tmax(void) {
    * Maximum number at all 1's except for left-most bit (011...111) for positivity
    * Therefore invert 0 to get all 1's, then right shift 31 and invert again
   */
-  return ~((~0)<<31);
+  return ~(1<<31);
 }
 // rating 2
 /*
@@ -212,20 +212,20 @@ int tmax(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  int nMin1 = n + (~0);
-  int min = (~0) << nMin1;
-  int max = ~min;
+
+  int neg1 = ~0;
   int negX = (~x) + 1;
+  int signX = x>>31;  // 11...111 if negative, 00...000 if non-negative
+  int absX = (x & (~signX)) + (negX & signX);
 
-  int test1 = min + x;
-  int test2 = max + negX;
+  int nMin1 = n + neg1;
+  int temp = absX>>nMin1;
 
-  int sign1 = !(test1>>31);
-  int sign2 = !(test2>>31);
+  // to catch corner case of x equal to minimum possible number of n bits
+  int low = (neg1)<<nMin1;
+  int exact = !(low ^ x);
 
-  printf("test1: %d, test2: %d \n" , sign1, sign2);
-  return ((!sign1) & (sign2));
-
+  return !(temp) + exact;
 }
 /*
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -449,7 +449,8 @@ int bitCount(int x) {
   int C = mask2 & (temp>>16);
   int D = mask2 & (temp>>24);
 
-  return (A + B + C + D);
+  int result = (A + B + C + D);
+  return result;
 }
 /*
  * isNonZero - Check whether x is nonzero using
