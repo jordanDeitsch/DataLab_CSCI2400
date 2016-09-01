@@ -212,15 +212,20 @@ int tmax(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  int negX = (~x) + 1;
-  int signX = x>>31;  // 11...111 if negative, 00...000 if non-negative
-  int absX = (x & (signX)) + (negX & (~signX));
-
   int nMin1 = n + (~0);
-  int test = absX + (1<<nMin1) + (~0);
-  return !(test>>31);
+  int min = (~0) << nMin1;
+  int max = ~min;
+  int negX = (~x) + 1;
 
-  return !(absX >> nMin1);  // 0 if doesn't fit, 1 if it does
+  int test1 = min + x;
+  int test2 = max + negX;
+
+  int sign1 = !(test1>>31);
+  int sign2 = !(test2>>31);
+
+  printf("test1: %d, test2: %d \n" , sign1, sign2);
+  return ((!sign1) & (sign2));
+
 }
 /*
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -369,6 +374,7 @@ int isGreater(int x, int y) {
   int wrap1 = (signX) & (!signY) & (!signDiff);  // 1 = wrapped to neg
   int wrap2 = (!signX) & (signY) & (signDiff);   // 1 = wrapped to pos
   int result = signDiff + wrap1 + ((~wrap2) + 1);
+  //printf("Result: %d \n", result);
   return result;
 }
 /*
@@ -424,12 +430,26 @@ int abs(int x) {
  *   Rating: 4
  */
 int bitCount(int x) {
-  int temp = 0;
-  int i;
-  for (i = 0; i < 32; i++){
-    temp += ((x>>i) & 1);
-  }
-  return temp;
+  int mask1 = (1) | (1<<8);
+  mask1 = mask1 | (mask1<<16);  // 1's at end of every byte: [00000001]
+
+  int a = (x) & mask1;
+  int b = (x>>1) & mask1;
+  int c = (x>>2) & mask1;
+  int d = (x>>3) & mask1;
+  int e = (x>>4) & mask1;
+  int f = (x>>5) & mask1;
+  int g = (x>>6) & mask1;
+  int h = (x>>7) & mask1;
+  int temp = a + b + c + d + e + f + g + h;
+
+  int mask2 = ~((~0)<<8);      // only last byte is 1: 00...0011111111
+  int A = mask2 & temp;
+  int B = mask2 & (temp>>8);
+  int C = mask2 & (temp>>16);
+  int D = mask2 & (temp>>24);
+
+  return (A + B + C + D);
 }
 /*
  * isNonZero - Check whether x is nonzero using
