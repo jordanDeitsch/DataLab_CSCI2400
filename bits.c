@@ -212,12 +212,20 @@ int tmax(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
+  /* Begin by finding the absolute value of x (used code from abs(int x))
+   * Shift this absolute value by n-1 bits
+   * Result should be zero if the number would fit in n bits
+   * Corner case: if x equals the minimum possible number allowed by n bits
+   * Catch this corner case by checking for equality with minimum value
+   */
 
+  // Code to find abs(x), see explanation in later function
   int neg1 = ~0;
   int negX = (~x) + 1;
-  int signX = x>>31;  // 11...111 if negative, 00...000 if non-negative
+  int signX = x>>31;
   int absX = (x & (~signX)) + (negX & signX);
 
+  // Find result of shifting now positive value of x n-1 bits
   int nMin1 = n + neg1;
   int temp = absX>>nMin1;
 
@@ -225,6 +233,7 @@ int fitsBits(int x, int n) {
   int low = (neg1)<<nMin1;
   int exact = !(low ^ x);
 
+  // add 1 to result if x is equal to the minum possible for n bits
   return !(temp) + exact;
 }
 /*
@@ -309,10 +318,11 @@ int copyLSB(int x) {
  *   Rating: 3
  */
 int reverseBytes(int x) {
-  /* Begin by creating a mas for the firt byte, 00..0011111111
+  /* Begin by creating a mask for the first byte, 00..0011111111
    * Separate original bytes with the mask and proper shifts
    * Set bytes to new locations with proper shifts
-   * Use inclusive or (|) to combine all bytes into result*/
+   * Use inclusive or (|) to combine all bytes into result
+   */
   int mask = ~((~0)<<8);
   int a = x & mask;
   int b = x & (mask << 8);
@@ -371,10 +381,10 @@ int isGreater(int x, int y) {
   int signY = !(y>>31);
   int signDiff = !(diff>>31);
 
-  int wrap1 = (signX) & (!signY) & (!signDiff);  // 1 = wrapped to neg
-  int wrap2 = (!signX) & (signY) & (signDiff);   // 1 = wrapped to pos
+  int wrap1 = (signX) & (!signY) & (!signDiff);  // 1 = wrapped to negative
+  int wrap2 = (!signX) & (signY) & (signDiff);   // 1 = wrapped to positive
   int result = signDiff + wrap1 + ((~wrap2) + 1);
-  //printf("Result: %d \n", result);
+
   return result;
 }
 /*
@@ -430,6 +440,14 @@ int abs(int x) {
  *   Rating: 4
  */
 int bitCount(int x) {
+  /* Begin by creating a mask with 1's only at the right edge of each byte
+   * Use shifts and & to check for 1's in each element of each byte
+   * Add up all eight numbers that contain 1's at edge of byte if a 1 existed
+   * Now each byte contains the number of 1's in that byte
+   * Use a second mask to right shift each byte down to the edge
+   * Add up each byte after it has been shifted for final answer
+   */
+
   int mask1 = (1) | (1<<8);
   mask1 = mask1 | (mask1<<16);  // 1's at end of every byte: [00000001]
 
@@ -483,9 +501,9 @@ int isNonZero(int x) {
 int bang(int x) {
   /* Could use previous function methods (modified), but this way is fun!
    * For each shift any ones are copied into the next chunk
-   * By the temp<<16, any ones are copied to the MSB
+   * By the temp<<16, any existing 1/s are copied to the MSB
    * Use temp>>31 to set all bits to 1 (only if a 1 originally existed)
-   * Add one to result, as now answer is either -1 or 0
+   * Add one to result, so -1 is now 0 and 0 is 1, as desired
    */
   int temp = x | (x<<1);
   temp = temp | (temp<<2);
