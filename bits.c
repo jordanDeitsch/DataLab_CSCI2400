@@ -373,17 +373,26 @@ int isGreater(int x, int y) {
    * Also when x<0, y>0, diff>0 (diff should be < 0)
    * Use these exceptions to correct difference if either are true
    */
-  int diff = x + ((~y) + 1);  // add x + (-y)
-  int temp = (~(!diff)) + 1;  // if diff = 0, temp = -1, else temp = 0
+  int diff;
+  int temp;
+  int signX;
+  int signY;
+  int signDiff;
+  int wrap1;
+  int wrap2;
+  int result;
+
+  diff = x + ((~y) + 1);  // add x + (-y)
+  temp = (~(!diff)) + 1;  // if diff = 0, temp = -1, else temp = 0
   diff = diff + temp;         // if diff = 0, set to -1, else diff unchanged
 
-  int signX = !(x>>31);
-  int signY = !(y>>31);
-  int signDiff = !(diff>>31);
+  signX = !(x>>31);
+  signY = !(y>>31);
+  signDiff = !(diff>>31);
 
-  int wrap1 = (signX) & (!signY) & (!signDiff);  // 1 = wrapped to negative
-  int wrap2 = (!signX) & (signY) & (signDiff);   // 1 = wrapped to positive
-  int result = signDiff + wrap1 + ((~wrap2) + 1);
+  wrap1 = (signX) & (!signY) & (!signDiff);  // 1 = wrapped to negative
+  wrap2 = (!signX) & (signY) & (signDiff);   // 1 = wrapped to positive
+  result = signDiff + wrap1 + ((~wrap2) + 1);
 
   return result;
 }
@@ -448,26 +457,44 @@ int bitCount(int x) {
    * Add up each byte after it has been shifted for final answer
    */
 
-  int mask1 = (1) | (1<<8);
+  int mask1;
+  int a;
+  int b;
+  int c;
+  int d;
+  int e;
+  int f;
+  int g;
+  int h;
+  int temp;
+  int mask2;
+  int A;
+  int B;
+  int C;
+  int D;
+  int result;
+
+
+  mask1 = (1) | (1<<8);
   mask1 = mask1 | (mask1<<16);  // 1's at end of every byte: [00000001]
 
-  int a = (x) & mask1;
-  int b = (x>>1) & mask1;
-  int c = (x>>2) & mask1;
-  int d = (x>>3) & mask1;
-  int e = (x>>4) & mask1;
-  int f = (x>>5) & mask1;
-  int g = (x>>6) & mask1;
-  int h = (x>>7) & mask1;
-  int temp = a + b + c + d + e + f + g + h;
+  a = (x) & mask1;
+  b = (x>>1) & mask1;
+  c = (x>>2) & mask1;
+  d = (x>>3) & mask1;
+  e = (x>>4) & mask1;
+  f = (x>>5) & mask1;
+  g = (x>>6) & mask1;
+  h = (x>>7) & mask1;
+  temp = a + b + c + d + e + f + g + h;
 
-  int mask2 = ~((~0)<<8);      // only last byte is 1: 00...0011111111
-  int A = mask2 & temp;
-  int B = mask2 & (temp>>8);
-  int C = mask2 & (temp>>16);
-  int D = mask2 & (temp>>24);
+  mask2 = ~((~0)<<8);      // only last byte is 1: 00...0011111111
+  A = mask2 & temp;
+  B = mask2 & (temp>>8);
+  C = mask2 & (temp>>16);
+  D = mask2 & (temp>>24);
 
-  int result = (A + B + C + D);
+  result = (A + B + C + D);
   return result;
 }
 /*
